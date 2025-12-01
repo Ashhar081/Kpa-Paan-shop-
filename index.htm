@@ -2,103 +2,678 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KPS - Welcome Paan Lovers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KPS - Fresh Paan Menu</title>
     <!-- Three.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Google Fonts: Great Vibes for Cursive -->
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Playfair Display (Serif) & Poppins (Sans) -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
+        :root {
+            --bg-cream: #FFF8EE;
+            --bg-mint: #F5FFFA;
+            --leaf-green: #2E8B57;
+            --paan-green: #1F7A1F;
+            --dark-green-text: #1B3A2D;
+            --sub-text: #666666;
+            --price-gold: #C9A227;
+        }
+
         body {
             margin: 0;
             overflow: hidden;
-            background: radial-gradient(circle at center, #2c3e50 0%, #000000 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Soft Gradient: Cream to Mint */
+            background: linear-gradient(to bottom, var(--bg-cream), var(--bg-mint));
+            font-family: 'Poppins', sans-serif;
             touch-action: none; 
             user-select: none; 
+            color: var(--dark-green-text);
         }
 
-        #info {
+        /* --- Header Section --- */
+        #header-container {
             position: absolute;
-            top: 20px;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
             text-align: center;
-            color: white;
-            pointer-events: auto; 
             z-index: 10;
-            cursor: default;
+            pointer-events: none; /* Let clicks pass through except trigger */
         }
 
+        /* Main Logo Text */
         h1 {
             margin: 0;
-            font-size: 3rem; /* Top KPS size */
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
             font-weight: 900;
-            letter-spacing: 3px;
-            background: linear-gradient(to bottom, #ffeaa7, #fab1a0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+            color: var(--paan-green);
+            cursor: pointer;
+            pointer-events: auto; /* Enable click for secret */
+            text-shadow: 0 2px 0px rgba(0,0,0,0.1);
+        }
+
+        /* Subtitle Clean */
+        .sub-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--leaf-green);
+            margin-top: -5px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: var(--sub-text);
+            margin-top: 5px;
+            font-weight: 400;
             text-transform: uppercase;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            cursor: pointer; 
-            line-height: 1;
+            letter-spacing: 2px;
         }
 
-        /* New Cursive Text Style */
-        .welcome-text {
-            font-family: 'Great Vibes', cursive;
-            font-size: 3.5rem; /* Big Font */
-            color: #ffd700; /* Gold Color */
-            margin: 5px 0 10px 0;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-            line-height: 1.2;
-            font-weight: normal;
-        }
-
-        /* HIDDEN BY DEFAULT - Admin Only */
+        /* --- Admin Controls --- */
         #admin-controls {
             position: absolute;
             top: 20px;
             right: 20px;
             z-index: 100;
-            pointer-events: auto;
             display: none; 
+            pointer-events: auto;
         }
 
         .toggle-btn {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border: 2px solid #fff;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
+            background: var(--leaf-green);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 10px rgba(46, 139, 87, 0.3);
             display: flex;
             align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
+        .toggle-btn:active { transform: scale(0.95); }
 
-        .toggle-btn.active {
-            background: #ffd700;
-            color: #000;
-            border-color: #ffd700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-        }
-
-        /* Modal Styles */
+        /* --- Clean Modal --- */
         .modal {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.9);
-            background: rgba(20, 20, 20, 0.95);
-            backdrop-filter: blur(20px);
+            background: #ffffff;
             padding: 40px;
             border-radius: 20px;
+            border: 1px solid #eee;
+            color: var(--dark-green-text);
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            min-width: 320px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .modal.active {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: auto;
+        }
+
+        .modal h2 { 
+            margin-top: 0; 
+            color: var(--paan-green);
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            border-bottom: 2px solid var(--bg-cream);
+            padding-bottom: 15px;
+        }
+
+        .modal input { 
+            width: 100%; 
+            padding: 15px; 
+            margin: 10px 0; 
+            background: var(--bg-mint); 
+            border: 1px solid #ddd; 
+            color: var(--dark-green-text); 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+        
+        .modal input:focus {
+            border-color: var(--leaf-green);
+            outline: none;
+            background: #fff;
+        }
+        
+        .file-upload { 
+            border: 2px dashed #ccc; 
+            padding: 25px; 
+            margin: 20px 0; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            background: #fafafa;
+            transition: 0.2s;
+        }
+        .file-upload:hover { border-color: var(--leaf-green); background: var(--bg-mint); }
+
+        .btn { 
+            background: var(--leaf-green); 
+            border: none; 
+            color: white; 
+            padding: 15px 30px; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600; 
+            text-transform: uppercase; 
+            margin-top: 15px; 
+            width: 100%; 
+            font-size: 0.9rem; 
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(46, 139, 87, 0.2);
+        }
+        .btn-cancel { background: white; color: var(--sub-text); border: 1px solid #ddd; box-shadow: none; }
+
+        #preview-img { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid var(--bg-cream); box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin: 10px auto; display: none; }
+        
+        #gesture-hint {
+            position: absolute;
+            bottom: 30px;
+            width: 100%;
+            text-align: center;
+            color: var(--sub-text);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header-container">
+        <!-- Secret Trigger -->
+        <h1 id="secret-trigger">KPS</h1>
+        <div class="sub-heading">Welcome Paan Lovers</div>
+        <div class="tagline">Premium & Hygienic Paan</div>
+    </div>
+
+    <!-- Hidden Edit Button -->
+    <div id="admin-controls">
+        <button id="edit-toggle" class="toggle-btn" onclick="toggleEditMode()">
+            <i class="ph ph-pencil-simple"></i> ADMIN MODE
+        </button>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal">
+        <h2>Update Item</h2>
+        <input type="text" id="edit-name" placeholder="Paan Name">
+        <input type="text" id="edit-price" placeholder="Price (e.g. ₹50)">
+        
+        <div class="file-upload" onclick="document.getElementById('edit-file').click()">
+            <i class="ph ph-camera" style="font-size: 2rem; color: #2E8B57;"></i>
+            <p style="margin: 5px 0; font-size: 0.8rem; color: #666;">Upload Photo (Max 500KB)</p>
+            <input type="file" id="edit-file" accept="image/png, image/jpeg" style="display: none" onchange="handleFileSelect(event)">
+        </div>
+        
+        <img id="preview-img" src="" alt="Preview">
+        
+        <button class="btn" onclick="saveEdit()">Save Changes</button>
+        <button class="btn btn-cancel" onclick="closeModals()">Cancel</button>
+    </div>
+    
+    <div id="gesture-hint">Swipe to Rotate • Pinch to Zoom</div>
+
+    <script>
+        // --- 1. ADMIN LOCK LOGIC ---
+        let secretClicks = 0;
+        const trigger = document.getElementById('secret-trigger');
+        
+        trigger.addEventListener('click', () => {
+            secretClicks++;
+            if(secretClicks === 5) {
+                const password = prompt("🔐 Admin Access\nEnter Password:");
+                if(password === "admin123") { 
+                    document.getElementById('admin-controls').style.display = 'block';
+                    alert("✅ Admin Mode Unlocked!");
+                } else {
+                    alert("❌ Access Denied");
+                }
+                secretClicks = 0; 
+            }
+        });
+
+        // --- 2. DATA MANAGEMENT ---
+        // Using "leaf green" accents for the data color placeholders
+        const defaultProducts = [
+            { name: "Sada Paan", price: "₹10", color: "#2ecc71", image: null }, 
+            { name: "Tambaku 00", price: "₹15", color: "#27ae60", image: null },
+            { name: "Kimam Special", price: "₹15", color: "#e74c3c", image: null }, 
+            { name: "Anniversary Spl", price: "₹50", color: "#f1c40f", image: null }, 
+            { name: "Meetha Paan", price: "₹15", color: "#20bf6b", image: null }, 
+            { name: "Full Meetha", price: "₹25", color: "#0fb9b1", image: null },
+            { name: "KPS Spl Meetha", price: "₹35", color: "#fa8231", image: null },
+            { name: "Rajnigandha", price: "₹35", color: "#a5b1c2", image: null }, 
+            { name: "Dragon Paan", price: "₹30", color: "#eb3b5a", image: null },
+            { name: "Chocolate Paan", price: "₹30", color: "#795548", image: null }, 
+            { name: "Fire Paan", price: "₹35", color: "#fc5c65", image: null }, 
+            { name: "Dry Fruits Paan", price: "₹50", color: "#fd9644", image: null }  
+        ];
+
+        let products = JSON.parse(localStorage.getItem('kps_fresh_v1')) || defaultProducts;
+
+        function saveToStorage() {
+            try {
+                localStorage.setItem('kps_fresh_v1', JSON.stringify(products));
+            } catch (e) {
+                alert("Storage Limit Reached. Cannot save image.");
+            }
+        }
+
+        // --- 3. SCENE SETUP ---
+        const scene = new THREE.Scene();
+        // Transparent background to let CSS gradient show
+        scene.background = null; 
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 14;
+        camera.position.y = 1;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true; 
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        // --- 4. LIGHTING (Fresh Daylight) ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7); // Bright ambient
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xfff5e6, 0.8); // Warm sun
+        dirLight.position.set(5, 10, 7);
+        dirLight.castShadow = true;
+        // Soft shadows
+        dirLight.shadow.mapSize.width = 1024;
+        dirLight.shadow.mapSize.height = 1024;
+        dirLight.shadow.camera.near = 0.5;
+        dirLight.shadow.camera.far = 50;
+        scene.add(dirLight);
+
+        // --- 5. TEXTURE GENERATOR (Clean Cafe Style) ---
+        function createCardTexture(text, price, baseColor, imageSrc) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 750;
+            const ctx = canvas.getContext('2d');
+            const texture = new THREE.CanvasTexture(canvas);
+            
+            function draw() {
+                // 1. White Card Background
+                ctx.fillStyle = "#FFFFFF";
+                // Rounded Rectangle
+                const r = 30;
+                ctx.beginPath();
+                ctx.roundRect(0, 0, 512, 750, r);
+                ctx.fill();
+
+                // 2. Subtle Stroke
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "#E0E0E0"; // Very light grey border
+                ctx.stroke();
+
+                // 3. Accent Top Line (Thin Green)
+                ctx.fillStyle = "#2E8B57"; // Leaf Green
+                ctx.beginPath();
+                ctx.rect(0, 50, 512, 4); // Under header area
+                ctx.fill();
+
+                // 4. Paan Name (Serif Heading)
+                ctx.fillStyle = "#1B3A2D"; // Dark Green
+                ctx.font = "bold 55px Georgia"; // Using Georgia as proxy for Playfair
+                ctx.textAlign = "center";
+                ctx.fillText(text, 256, 520);
+
+                // 5. Description (Placeholder)
+                ctx.fillStyle = "#666666"; // Grey Subtext
+                ctx.font = "30px Arial"; // Sans serif
+                ctx.fillText("Fresh & Hygienic", 256, 570);
+
+                // 6. Price Tag (Soft Gold Pill)
+                const priceW = 200;
+                const priceH = 70;
+                const priceX = 256 - (priceW/2);
+                const priceY = 620;
+                
+                ctx.fillStyle = "#C9A227"; // Soft Gold
+                ctx.beginPath();
+                ctx.roundRect(priceX, priceY, priceW, priceH, 35);
+                ctx.fill();
+                
+                ctx.fillStyle = "#FFFFFF";
+                ctx.font = "bold 40px Arial";
+                ctx.fillText(price, 256, priceY + 48);
+
+                texture.needsUpdate = true;
+            }
+            draw(); 
+
+            if (imageSrc) {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = function() {
+                    draw(); 
+                    ctx.save();
+                    // Clip image area (Top Circle/Oval)
+                    ctx.beginPath();
+                    ctx.arc(256, 260, 150, 0, Math.PI * 2);
+                    ctx.clip();
+                    ctx.drawImage(img, 106, 110, 300, 300);
+                    ctx.restore();
+                    texture.needsUpdate = true;
+                };
+                img.onerror = function() { draw(); }; 
+                img.src = imageSrc;
+            } else {
+                // Placeholder: Green Circle with Initial
+                ctx.fillStyle = "#F5FFFA"; // Mint White
+                ctx.beginPath();
+                ctx.arc(256, 260, 140, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = "#2E8B57"; // Leaf Green
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                ctx.fillStyle = "#2E8B57";
+                ctx.font = "bold 140px Georgia";
+                ctx.fillText(text.charAt(0), 256, 310);
+                texture.needsUpdate = true;
+            }
+            return texture;
+        }
+
+        // --- 6. CARDS SETUP ---
+        const carouselGroup = new THREE.Group();
+        scene.add(carouselGroup);
+        const cards = [];
+        const radius = 7.5;
+        const dummyTarget = new THREE.Object3D();
+
+        function renderCards() {
+            cards.forEach(c => carouselGroup.remove(c));
+            cards.length = 0;
+
+            products.forEach((product, i) => {
+                const angle = (i / products.length) * Math.PI * 2;
+                
+                // Paper-thin card look (cleaner)
+                const geometry = new THREE.BoxGeometry(2.3, 3.4, 0.05); 
+                const texture = createCardTexture(product.name, product.price, product.color, product.image);
+                
+                // Front Material: Matte Paper
+                const matFront = new THREE.MeshStandardMaterial({ 
+                    map: texture, 
+                    roughness: 0.8, // Matte
+                    metalness: 0.0,
+                    color: 0xffffff
+                });
+                
+                // Sides/Back: Pure White
+                const matBody = new THREE.MeshStandardMaterial({ 
+                    color: 0xffffff, 
+                    roughness: 0.8 
+                });
+                
+                // Apply texture to front (4) and back (5)
+                // [Right, Left, Top, Bottom, Front, Back]
+                const materials = [matBody, matBody, matBody, matBody, matFront, matFront];
+
+                const card = new THREE.Mesh(geometry, materials);
+                card.castShadow = true;
+                
+                card.position.x = Math.cos(angle) * radius;
+                card.position.z = Math.sin(angle) * radius;
+                card.lookAt(0, 0, 0);
+                card.rotation.y += Math.PI;
+
+                card.userData = { id: i, angle: angle }; 
+                carouselGroup.add(card);
+                cards.push(card);
+            });
+        }
+        renderCards();
+
+        // --- 7. LOGIC ---
+        let isEditMode = false;
+        let currentEditIndex = -1;
+        let tempImageSrc = null;
+        let zoomedCardIndex = -1;
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let isDragging = false, isPinching = false;
+        let previousMouseX = 0, previousMouseY = 0;
+        let targetRotation = 0, currentRotation = 0;
+        let targetVerticalY = 0, currentVerticalY = 0;
+        let autoRotateSpeed = 0.0008; 
+        let initialPinchDistance = 0, lastMoveTime = 0;
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('edit-toggle');
+            if(isEditMode) {
+                btn.innerHTML = '<i class="ph ph-check-circle"></i> SAVE MODE';
+                btn.classList.add('active');
+                zoomedCardIndex = -1;
+            } else {
+                btn.innerHTML = '<i class="ph ph-pencil-simple"></i> ADMIN MODE';
+                btn.classList.remove('active');
+                closeModals();
+            }
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 500 * 1024) { alert("File too big (Max 500KB)"); return; }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    tempImageSrc = e.target.result; 
+                    document.getElementById('preview-img').src = tempImageSrc;
+                    document.getElementById('preview-img').style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveEdit() {
+            if (currentEditIndex === -1) return;
+            const newName = document.getElementById('edit-name').value;
+            const newPrice = document.getElementById('edit-price').value;
+            products[currentEditIndex].name = newName;
+            products[currentEditIndex].price = newPrice;
+            if (tempImageSrc) products[currentEditIndex].image = tempImageSrc;
+            saveToStorage(); 
+            renderCards(); 
+            closeModals();
+        }
+
+        function closeModals() {
+            document.getElementById('edit-modal').classList.remove('active');
+            currentEditIndex = -1;
+            tempImageSrc = null;
+        }
+
+        // Listeners
+        window.addEventListener('mousedown', (e) => { 
+            if(e.target.closest('.modal')) return;
+            isDragging = true; previousMouseX = e.clientX; previousMouseY = e.clientY; autoRotateSpeed = 0; 
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+            if(isDragging && zoomedCardIndex === -1) { 
+                targetRotation += (e.clientX - previousMouseX) * 0.003;
+                targetVerticalY -= (e.clientY - previousMouseY) * 0.005;
+                targetVerticalY = Math.max(-3, Math.min(targetVerticalY, 3));
+                previousMouseX = e.clientX; previousMouseY = e.clientY; lastMoveTime = Date.now();
+            }
+        });
+
+        window.addEventListener('mouseup', () => { isDragging = false; if(zoomedCardIndex === -1) setTimeout(() => autoRotateSpeed = 0.0008, 2000); });
+        
+        window.addEventListener('touchstart', (e) => { 
+            if(e.target.closest('.modal')) return;
+            if (e.touches.length === 2) {
+                isPinching = true; isDragging = false; autoRotateSpeed = 0;
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
+            } else if (e.touches.length === 1) {
+                isDragging = true; isPinching = false;
+                previousMouseX = e.touches[0].clientX; previousMouseY = e.touches[0].clientY;
+                autoRotateSpeed = 0; 
+                mouse.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1; 
+                mouse.y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+            }
+        }, {passive: false});
+
+        window.addEventListener('touchmove', (e) => {
+            if(e.target.closest('.modal')) return;
+            e.preventDefault(); 
+            if (isPinching && e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const currentDist = Math.sqrt(dx * dx + dy * dy);
+                camera.position.z += (initialPinchDistance - currentDist) * 0.05; 
+                camera.position.z = Math.max(8, Math.min(camera.position.z, 22));
+                initialPinchDistance = currentDist;
+            } else if (isDragging && e.touches.length === 1 && zoomedCardIndex === -1) {
+                targetRotation += (e.touches[0].clientX - previousMouseX) * 0.003; 
+                targetVerticalY -= (e.touches[0].clientY - previousMouseY) * 0.008; 
+                targetVerticalY = Math.max(-3, Math.min(targetVerticalY, 3)); 
+                previousMouseX = e.touches[0].clientX; previousMouseY = e.touches[0].clientY;
+            }
+        }, {passive: false});
+
+        window.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) isPinching = false;
+            if (e.touches.length === 0) isDragging = false;
+            if(zoomedCardIndex === -1 && !isPinching && !isDragging) setTimeout(() => autoRotateSpeed = 0.0008, 2000);
+        });
+
+        window.addEventListener('click', (event) => {
+            if (Date.now() - lastMoveTime < 200) return; 
+            if(event.target.closest('.modal') || event.target.closest('#admin-controls') || event.target.closest('#header-container')) return;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(cards);
+
+            if (intersects.length > 0) {
+                const index = intersects[0].object.userData.id;
+                if (isEditMode) {
+                    const product = products[index];
+                    currentEditIndex = index;
+                    document.getElementById('edit-name').value = product.name;
+                    document.getElementById('edit-price').value = product.price;
+                    document.getElementById('preview-img').style.display = product.image ? 'block' : 'none';
+                    if(product.image) document.getElementById('preview-img').src = product.image;
+                    document.getElementById('edit-modal').classList.add('active');
+                } else {
+                    if (zoomedCardIndex === index) {
+                        zoomedCardIndex = -1;
+                        autoRotateSpeed = 0.0008; 
+                    } else {
+                        zoomedCardIndex = index;
+                        autoRotateSpeed = 0; 
+                        targetVerticalY = 0; 
+                    }
+                }
+            } else {
+                if (isEditMode) closeModals();
+                else if (zoomedCardIndex !== -1) { zoomedCardIndex = -1; autoRotateSpeed = 0.0008; }
+            }
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (!isDragging && !isEditMode && zoomedCardIndex === -1 && !isPinching) targetRotation += autoRotateSpeed;
+            
+            currentRotation += (targetRotation - currentRotation) * 0.05;
+            carouselGroup.rotation.y = currentRotation;
+            currentVerticalY += (targetVerticalY - currentVerticalY) * 0.05;
+            carouselGroup.position.y = currentVerticalY;
+            
+            const time = Date.now() * 0.001;
+            const camLocal = camera.position.clone().applyMatrix4(carouselGroup.matrixWorld.clone().invert());
+
+            cards.forEach((card, i) => {
+                let targetPos = new THREE.Vector3();
+                let targetScale = 1;
+                let targetQuaternion = new THREE.Quaternion();
+
+                if (i === zoomedCardIndex) {
+                    const desiredWorldPos = new THREE.Vector3(0, 1.0 + currentVerticalY, 11.5); 
+                    const inverseGroupMatrix = carouselGroup.matrixWorld.clone().invert();
+                    const localTargetPos = desiredWorldPos.clone().applyMatrix4(inverseGroupMatrix);
+                    targetPos.copy(localTargetPos);
+                    targetScale = 1.4; 
+                    dummyTarget.position.copy(localTargetPos);
+                    dummyTarget.lookAt(camLocal); 
+                    targetQuaternion.copy(dummyTarget.quaternion);
+                } else {
+                    const angle = card.userData.angle;
+                    targetPos.set(
+                        Math.cos(angle) * radius,
+                        Math.sin(time + i) * 0.1, 
+                        Math.sin(angle) * radius
+                    );
+                    targetScale = 1;
+                    dummyTarget.position.copy(targetPos);
+                    dummyTarget.lookAt(0, 0, 0);
+                    dummyTarget.rotateY(Math.PI);
+                    targetQuaternion.copy(dummyTarget.quaternion);
+                }
+                
+                card.position.lerp(targetPos, 0.08);
+                card.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.08);
+                card.quaternion.slerp(targetQuaternion, 0.08); 
+            });
+
+            renderer.render(scene, camera);
+        }
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
+
+
             border: 2px solid #555;
             color: white;
             text-align: center;
@@ -639,5 +1214,6 @@
     </script>
 </body>
 </html>
+
 
 
